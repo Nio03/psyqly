@@ -1,9 +1,26 @@
 // src/components/Navbar.tsx
+'use client'
+
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
-  const { data: session } = useSession()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = document.cookie.includes('token=')
+    setIsLoggedIn(token)
+  }, [])
+
+  const handleLogout = async () => {
+    const response = await fetch('/api/logout', { method: 'POST' })
+    if (response.ok) {
+      setIsLoggedIn(false)
+      router.push('/')
+    }
+  }
 
   return (
     <nav className="bg-blue-600 p-4">
@@ -12,12 +29,12 @@ export default function Navbar() {
           Psyqly
         </Link>
         <div>
-          {session ? (
+          {isLoggedIn ? (
             <>
               <Link href="/dashboard" className="text-white mr-4">
                 Dashboard
               </Link>
-              <button onClick={() => signOut()} className="text-white">
+              <button onClick={handleLogout} className="text-white">
                 Cerrar sesión
               </button>
             </>

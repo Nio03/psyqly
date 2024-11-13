@@ -2,7 +2,6 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export default function Login() {
@@ -12,16 +11,17 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     })
 
-    if (result?.error) {
-      alert(result.error)
-    } else {
+    if (response.ok) {
       router.push('/dashboard')
+    } else {
+      const data = await response.json()
+      alert(data.error || 'Error al iniciar sesión')
     }
   }
 

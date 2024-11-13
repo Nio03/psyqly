@@ -21,7 +21,8 @@ export default function Register() {
     if (response.ok) {
       router.push('/questionnaire')
     } else {
-      alert('Error en el registro')
+      const data = await response.json()
+      alert(data.error || 'Error en el registro')
     }
   }
 
